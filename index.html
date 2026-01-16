@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bingo Game Custom</title>
+    <title>Bingo Custom - Counter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,6 +20,14 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .score-board {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #d35400;
+            margin-top: 10px;
         }
 
         input {
@@ -42,7 +50,6 @@
             background-color: #0056b3;
         }
 
-        /* Định dạng bảng Bingo */
         #bingo-container {
             display: grid;
             gap: 10px;
@@ -68,72 +75,123 @@
             border-radius: 8px;
         }
 
-        /* Hiệu ứng khi chọn số */
+        /* Vòng tròn khi chọn (Màu xanh) */
         .cell.selected {
             background-color: #28a745;
             color: white;
             border-color: #1e7e34;
-            transform: scale(0.95);
-            border-radius: 50%; /* Tạo hình tròn khi chọn */
+            transform: scale(0.9);
+            border-radius: 50%;
+        }
+
+        /* Đổi màu khi đầy hàng/cột/chéo (Màu Vàng/Cam) */
+        .cell.completed {
+            background-color: #f1c40f !important;
+            border-color: #f39c12 !important;
+            color: #333 !important;
+            box-shadow: 0 0 10px rgba(241, 196, 15, 0.8);
         }
     </style>
 </head>
 <body>
 
-    <h2>Tạo Bảng Bingo Tùy Chỉnh</h2>
-
     <div class="controls">
+        <h2>Bingo Game</h2>
         <label for="sizeN">Nhập cỡ n: </label>
         <input type="number" id="sizeN" min="2" max="10" value="5">
-        <button onclick="generateBingo()">Tạo bảng</button>
+        <button onclick="generateBingo()">Tạo bảng mới</button>
+        <div class="score-board">Tổng đường Bingo: <span id="totalLines">0</span></div>
     </div>
 
     <div id="bingo-container"></div>
 
     <script>
+        let cells = [];
+        let n = 5;
+
         function generateBingo() {
             const container = document.getElementById('bingo-container');
-            const n = parseInt(document.getElementById('sizeN').value);
+            n = parseInt(document.getElementById('sizeN').value);
             
             if (isNaN(n) || n < 1) {
                 alert("Vui lòng nhập một số hợp lệ!");
                 return;
             }
 
-            // Xóa bảng cũ
             container.innerHTML = '';
-
-            // Thiết lập số cột cho CSS Grid
             container.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
 
-            // Tạo mảng số từ 1 đến n*n
-            let numbers = [];
-            for (let i = 1; i <= n * n; i++) {
-                numbers.push(i);
-            }
-
-            // Xáo trộn mảng (Fisher-Yates Shuffle)
+            let numbers = Array.from({length: n * n}, (_, i) => i + 1);
             for (let i = numbers.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
             }
 
-            // Tạo các ô trong bảng
+            cells = [];
             numbers.forEach(num => {
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
                 cell.innerText = num;
-
-                // Sự kiện click để đổi màu/đánh dấu
                 cell.onclick = function() {
                     this.classList.toggle('selected');
+                    checkBingo();
                 };
-
                 container.appendChild(cell);
+                cells.push(cell);
             });
+            checkBingo(); // Reset counter
         }
 
-        // Khởi tạo bảng mặc định khi load trang
+        function checkBingo() {
+            // Xóa màu vàng cũ để tính toán lại từ đầu
+            cells.forEach(c => c.classList.remove('completed'));
+            
+            let totalLines = 0;
+            let winningIndices = new Set();
+
+            // 1. Kiểm tra hàng ngang
+            for (let r = 0; r < n; r++) {
+                let row = [];
+                for (let c = 0; c < n; c++) row.push(r * n + c);
+                if (row.every(idx => cells[idx].classList.contains('selected'))) {
+                    totalLines++;
+                    row.forEach(idx => winningIndices.add(idx));
+                }
+            }
+
+            // 2. Kiểm tra hàng dọc
+            for (let c = 0; c < n; c++) {
+                let col = [];
+                for (let r = 0; r < n; r++) col.push(r * n + c);
+                if (col.every(idx => cells[idx].classList.contains('selected'))) {
+                    totalLines++;
+                    col.forEach(idx => winningIndices.add(idx));
+                }
+            }
+
+            // 3. Đường chéo chính
+            let diag1 = [];
+            for (let i = 0; i < n; i++) diag1.push(i * n + i);
+            if (diag1.every(idx => cells[idx].classList.contains('selected'))) {
+                totalLines++;
+                diag1.forEach(idx => winningIndices.add(idx));
+            }
+
+            // 4. Đường chéo phụ
+            let diag2 = [];
+            for (let i = 0; i < n; i++) diag2.push(i * n + (n - 1 - i));
+            if (diag2.every(idx => cells[idx].classList.contains('selected'))) {
+                totalLines++;
+                diag2.forEach(idx => winningIndices.add(idx));
+            }
+
+            // Đánh dấu màu vàng cho các ô thuộc đường đã thắng
+            winningIndices.forEach(idx => cells[idx].classList.add('completed'));
+            
+            // Cập nhật tổng số đường
+            document.getElementById('totalLines').innerText = totalLines;
+        }
+
         window.onload = generateBingo;
     </script>
 </body>
