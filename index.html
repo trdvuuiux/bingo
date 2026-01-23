@@ -14,24 +14,22 @@
       }
       #start-btn {
         padding: 15px 30px; font-size: 18px; background: #28a745;
-        color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;
+        color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 15px;
       }
     </style>
   </head>
   <body>
 
     <div id="start-screen">
-      <p>Hướng camera vào ảnh 1 hoặc ảnh 2<br>để xem video tương ứng</p>
+      <p>Hướng camera vào ảnh 1 hoặc ảnh 2 để xem video</p>
       <button id="start-btn">Bắt đầu quét</button>
     </div>
 
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no; uiError: no; uiScanning: yes;" 
-             color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
-             vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no; uiError: no; uiScanning: yes;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
       <a-assets>
-        <video id="video1" src="thanhcoloa.mp4" loop="true" crossorigin="anonymous" playsinline muted></video>
-        <video id="video2" src="vanmieuquoctugiam.mp4" loop="true" crossorigin="anonymous" playsinline muted></video>
+        <video id="video1" src="test1.mp4" loop="true" crossorigin="anonymous" playsinline muted></video>
+        <video id="video2" src="test2.mp4" loop="true" crossorigin="anonymous" playsinline muted></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -53,7 +51,6 @@
       
       const v1 = document.querySelector('#video1');
       const v2 = document.querySelector('#video2');
-
       const t1 = document.querySelector('#target1');
       const t2 = document.querySelector('#target2');
 
@@ -62,11 +59,11 @@
         sceneEl.systems["mindar-image-system"].start();
       });
 
-      // Xử lý cho Ảnh 1
+      // Điều khiển video 1 khi quét trúng ảnh 1
       t1.addEventListener("targetFound", () => { v1.play(); });
       t1.addEventListener("targetLost", () => { v1.pause(); });
 
-      // Xử lý cho Ảnh 2
+      // Điều khiển video 2 khi quét trúng ảnh 2
       t2.addEventListener("targetFound", () => { v2.play(); });
       t2.addEventListener("targetLost", () => { v2.pause(); });
     </script>
