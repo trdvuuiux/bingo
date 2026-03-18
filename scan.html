@@ -1,0 +1,106 @@
+ <!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #start-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    #start-btn {
+      padding: 15px 30px;
+      font-size: 18px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="start-screen">
+    <p>Hướng camera vào túi tote hoặc hình in để xem nội dung AR.</p>
+    <button id="start-btn">Bắt đầu quét</button>
+  </div>
+
+  <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no; uiError: no; uiScanning: yes;"
+    color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <a-assets>
+      <video id="video1" src="./intro.mp4" loop="true" crossorigin="anonymous" playsinline></video>
+      <video id="video2" src="./intro.mp4" loop="true" crossorigin="anonymous" playsinline></video>
+      <video id="video3" src="./intro.mp4" loop="true" crossorigin="anonymous" playsinline></video>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity id="target1" mindar-image-target="targetIndex: 0">
+      <a-video src="#video1" width="1" height="0.56" position="0 0 0"></a-video>
+    </a-entity>
+
+    <a-entity id="target2" mindar-image-target="targetIndex: 1">
+      <a-video src="#video2" width="1" height="0.56" position="0 0 0"></a-video>
+    </a-entity>
+
+    <a-entity id="target3" mindar-image-target="targetIndex: 2">
+      <a-video src="#video3" width="1" height="0.56" position="0 0 0"></a-video>
+    </a-entity>
+
+  </a-scene>
+
+  <script>
+    const startBtn = document.querySelector('#start-btn');
+    const startScreen = document.querySelector('#start-screen');
+    const sceneEl = document.querySelector('a-scene');
+
+    const v1 = document.querySelector('#video1');
+    const v2 = document.querySelector('#video2');
+    const v3 = document.querySelector('#video3');
+    const t1 = document.querySelector('#target1');
+    const t2 = document.querySelector('#target2');
+    const t3 = document.querySelector('#target3');
+
+    startBtn.addEventListener('click', () => {
+      startScreen.style.display = 'none';
+      sceneEl.systems["mindar-image-system"].start();
+    });
+
+    // Điều khiển video 1 khi quét trúng ảnh 1
+    t1.addEventListener("targetFound", () => { v1.play(); });
+    t1.addEventListener("targetLost", () => { v1.pause(); });
+
+    // Điều khiển video 2 khi quét trúng ảnh 2
+    t2.addEventListener("targetFound", () => { v2.play(); });
+    t2.addEventListener("targetLost", () => { v2.pause(); });
+
+    // Điều khiển video 3 khi quét trúng ảnh 3
+    t3.addEventListener("targetFound", () => { v3.play(); });
+    t3.addEventListener("targetLost", () => { v3.pause(); });
+  </script>
+</body>
+
+</html>
