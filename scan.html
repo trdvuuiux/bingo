@@ -84,33 +84,11 @@
     const t2 = document.querySelector('#target2');
     const t3 = document.querySelector('#target3');
 
-    // Kiểm tra bối cảnh bảo mật: chỉ cho quét nếu HTTPS hoặc localhost
-    const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    const isSecure = location.protocol === 'https:' || isLocalhost;
-
-    if (!isSecure) {
-      startBtn.disabled = true;
-      startBtn.style.opacity = '0.6';
-      startBtn.style.cursor = 'not-allowed';
-      alert('Trang đang chạy không phải HTTPS (hoặc localhost) nên trình duyệt sẽ không cho dùng camera.\n\nHãy deploy lên đường dẫn https:// hoặc dùng localhost để quét AR.');
-    }
-
-    startBtn.addEventListener('click', async () => {
-      if (!isSecure) return; // chặn bấm nút nếu không ở môi trường an toàn
-
+    // Giữ behavior đơn giản giống ví dụ Thánh Gióng:
+    // chỉ ẩn màn hình giới thiệu và khởi động MindAR, không tự hiện alert.
+    startBtn.addEventListener('click', () => {
       startScreen.style.display = 'none';
-
-      try {
-        // Xin quyền camera trước khi khởi động MindAR
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        }
-
-        sceneEl.systems["mindar-image-system"].start();
-      } catch (err) {
-        console.error('Lỗi quyền camera:', err);
-        alert('Trình duyệt không cho dùng camera. Hãy bật quyền camera cho trang web và đảm bảo dùng HTTPS.');
-      }
+      sceneEl.systems["mindar-image-system"].start();
     });
 
     // Điều khiển video 1 khi quét trúng ảnh 1
