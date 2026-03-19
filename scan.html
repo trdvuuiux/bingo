@@ -84,9 +84,20 @@
     const t2 = document.querySelector('#target2');
     const t3 = document.querySelector('#target3');
 
-    startBtn.addEventListener('click', () => {
+    startBtn.addEventListener('click', async () => {
       startScreen.style.display = 'none';
-      sceneEl.systems["mindar-image-system"].start();
+
+      try {
+        // Xin quyền camera trước khi khởi động MindAR
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        }
+
+        sceneEl.systems["mindar-image-system"].start();
+      } catch (err) {
+        console.error('Lỗi quyền camera:', err);
+        alert('Trình duyệt không cho dùng camera. Hãy bật quyền camera cho trang web và đảm bảo dùng HTTPS.');
+      }
     });
 
     // Điều khiển video 1 khi quét trúng ảnh 1
