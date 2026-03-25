@@ -51,9 +51,8 @@
     device-orientation-permission-ui="enabled: false">
 
     <a-assets>
-      <video id="video1" src="./intro.mp4" loop="true" crossorigin="anonymous" playsinline></video>
-      <video id="video2" src="./intro.mp4" loop="true" crossorigin="anonymous" playsinline></video>
-      <video id="video3" src="./intro.mp4" loop="true" crossorigin="anonymous" playsinline></video>
+      <!-- Dùng chung một video cho cả 3 target, preload nhẹ để giảm thời gian tải -->
+      <video id="video1" src="./intro.mp4" loop="true" crossorigin="anonymous" playsinline muted preload="metadata"></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -63,11 +62,11 @@
     </a-entity>
 
     <a-entity id="target2" mindar-image-target="targetIndex: 1">
-      <a-video src="#video2" width="1" height="0.56" position="0 0 0"></a-video>
+      <a-video src="#video1" width="1" height="0.56" position="0 0 0"></a-video>
     </a-entity>
 
     <a-entity id="target3" mindar-image-target="targetIndex: 2">
-      <a-video src="#video3" width="1" height="0.56" position="0 0 0"></a-video>
+      <a-video src="#video1" width="1" height="0.56" position="0 0 0"></a-video>
     </a-entity>
 
   </a-scene>
@@ -78,8 +77,6 @@
     const sceneEl = document.querySelector('a-scene');
 
     const v1 = document.querySelector('#video1');
-    const v2 = document.querySelector('#video2');
-    const v3 = document.querySelector('#video3');
     const t1 = document.querySelector('#target1');
     const t2 = document.querySelector('#target2');
     const t3 = document.querySelector('#target3');
@@ -91,17 +88,18 @@
       sceneEl.systems["mindar-image-system"].start();
     });
 
-    // Điều khiển video 1 khi quét trúng ảnh 1
-    t1.addEventListener("targetFound", () => { v1.play(); });
-    t1.addEventListener("targetLost", () => { v1.pause(); });
+    // Dùng chung một video: bất cứ target nào xuất hiện thì play, mất thì pause
+    const playSharedVideo = () => { v1 && v1.play(); };
+    const pauseSharedVideo = () => { v1 && v1.pause(); };
 
-    // Điều khiển video 2 khi quét trúng ảnh 2
-    t2.addEventListener("targetFound", () => { v2.play(); });
-    t2.addEventListener("targetLost", () => { v2.pause(); });
+    t1.addEventListener("targetFound", playSharedVideo);
+    t1.addEventListener("targetLost", pauseSharedVideo);
 
-    // Điều khiển video 3 khi quét trúng ảnh 3
-    t3.addEventListener("targetFound", () => { v3.play(); });
-    t3.addEventListener("targetLost", () => { v3.pause(); });
+    t2.addEventListener("targetFound", playSharedVideo);
+    t2.addEventListener("targetLost", pauseSharedVideo);
+
+    t3.addEventListener("targetFound", playSharedVideo);
+    t3.addEventListener("targetLost", pauseSharedVideo);
   </script>
 </body>
 
