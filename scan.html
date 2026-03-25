@@ -51,21 +51,14 @@
     device-orientation-permission-ui="enabled: false">
 
     <a-assets>
-      <!-- Dùng chung một video cho cả 3 target, preload nhẹ để giảm thời gian tải -->
+      <!-- Chỉ một video cho một target duy nhất, preload metadata để giảm thời gian tải -->
       <video id="video1" src="./intro.mp4" loop="true" crossorigin="anonymous" playsinline muted preload="metadata"></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+    <!-- targets.mind chỉ có 1 ảnh ở index 0 -->
     <a-entity id="target1" mindar-image-target="targetIndex: 0">
-      <a-video src="#video1" width="1" height="0.56" position="0 0 0"></a-video>
-    </a-entity>
-
-    <a-entity id="target2" mindar-image-target="targetIndex: 1">
-      <a-video src="#video1" width="1" height="0.56" position="0 0 0"></a-video>
-    </a-entity>
-
-    <a-entity id="target3" mindar-image-target="targetIndex: 2">
       <a-video src="#video1" width="1" height="0.56" position="0 0 0"></a-video>
     </a-entity>
 
@@ -78,8 +71,6 @@
 
     const v1 = document.querySelector('#video1');
     const t1 = document.querySelector('#target1');
-    const t2 = document.querySelector('#target2');
-    const t3 = document.querySelector('#target3');
 
     // Giữ behavior đơn giản giống ví dụ Thánh Gióng:
     // chỉ ẩn màn hình giới thiệu và khởi động MindAR, không tự hiện alert.
@@ -88,18 +79,9 @@
       sceneEl.systems["mindar-image-system"].start();
     });
 
-    // Dùng chung một video: bất cứ target nào xuất hiện thì play, mất thì pause
-    const playSharedVideo = () => { v1 && v1.play(); };
-    const pauseSharedVideo = () => { v1 && v1.pause(); };
-
-    t1.addEventListener("targetFound", playSharedVideo);
-    t1.addEventListener("targetLost", pauseSharedVideo);
-
-    t2.addEventListener("targetFound", playSharedVideo);
-    t2.addEventListener("targetLost", pauseSharedVideo);
-
-    t3.addEventListener("targetFound", playSharedVideo);
-    t3.addEventListener("targetLost", pauseSharedVideo);
+    // Khi nhận diện được ảnh (target 0) thì chạy video, mất ảnh thì dừng
+    t1.addEventListener("targetFound", () => { v1 && v1.play(); });
+    t1.addEventListener("targetLost", () => { v1 && v1.pause(); });
   </script>
 </body>
 
