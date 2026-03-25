@@ -51,8 +51,8 @@
     device-orientation-permission-ui="enabled: false">
 
     <a-assets>
-      <!-- Chỉ một video cho một target duy nhất, preload metadata để giảm thời gian tải -->
-      <video id="video1" src="./intro.mp4" loop="true" crossorigin="anonymous" playsinline muted preload="metadata"></video>
+      <!-- Video có tiếng, preload metadata cho nhẹ, không muted để có âm thanh -->
+      <video id="video1" src="./intro.mp4" loop="true" crossorigin="anonymous" playsinline preload="metadata"></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -72,10 +72,22 @@
     const v1 = document.querySelector('#video1');
     const t1 = document.querySelector('#target1');
 
-    // Giữ behavior đơn giản giống ví dụ Thánh Gióng:
-    // chỉ ẩn màn hình giới thiệu và khởi động MindAR, không tự hiện alert.
-    startBtn.addEventListener('click', () => {
+    // Khi bấm bắt đầu: ẩn màn hình intro, kích hoạt audio bằng user-gesture rồi mới start MindAR
+    startBtn.addEventListener('click', async () => {
       startScreen.style.display = 'none';
+
+      // Thao tác phát/tạm dừng trong sự kiện click để trình duyệt cho phép audio trên mobile
+      if (v1) {
+        try {
+          v1.muted = false;
+          await v1.play();
+          v1.pause();
+          v1.currentTime = 0;
+        } catch (e) {
+          console.warn('Không pre-play được video để bật tiếng:', e);
+        }
+      }
+
       sceneEl.systems["mindar-image-system"].start();
     });
 
