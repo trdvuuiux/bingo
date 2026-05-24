@@ -42,6 +42,8 @@
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      overscroll-behavior-y: auto;
     }
 
     .page {
@@ -470,10 +472,21 @@
     }
 
     @media (max-width: 420px) {
+      html,
+      body {
+        min-height: 100%;
+        height: auto;
+      }
+
+      body {
+        display: block;
+      }
+
       .page {
         padding-left: 14px;
         padding-right: 14px;
         padding-bottom: 136px;
+        min-height: 100svh;
       }
 
       .timeline {
@@ -482,6 +495,12 @@
 
       .timeline-item {
         padding-left: 12px;
+      }
+
+      .cta-container {
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
       }
     }
 
